@@ -1,7 +1,7 @@
 var MyConsole = require("./my_console");
 MyConsole.setAllowedModuleList(
-    ['KeepAlive', 'TcpMyBus', 'AutoReconnect','Test'],
-    ['KeepAlive', 'TcpMyBus', 'AutoReconnect','Test']
+    ['KeepAlive', 'TcpMyBus', 'AutoReconnect','Test', 'PackerReassembler'],
+    ['KeepAlive', 'TcpMyBus', 'AutoReconnect','Test', 'PackerReassembler']
 );
 
 
