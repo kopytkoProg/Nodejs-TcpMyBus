@@ -24,7 +24,7 @@ PackerReassembler.prototype.adMsg = function (msg) {
     if (this.buffer.length == 0) {
         var begin = msg.indexOf('{');
 
-        if(begin > 0) cons.log('Invalid begin  received', msg);
+        if(begin > 0) cons.error('Invalid begin  received', msg);
 
         if (begin >= 0) {
             msg = msg.substr(begin, msg.length - begin);
