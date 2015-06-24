@@ -1,14 +1,13 @@
 var MyConsole = require("./my_console");
 MyConsole.setAllowedModuleList(
-    ['KeepAlive', 'TcpMyBus', 'AutoReconnect','Test', 'PackerReassembler'],
-    ['KeepAlive', 'TcpMyBus', 'AutoReconnect','Test', 'PackerReassembler']
+    ['KeepAlive', 'TcpMyBus', 'AutoReconnect', 'Test', 'PackerReassembler', 'EspDevice'],
+    ['KeepAlive', 'TcpMyBus', 'AutoReconnect', 'Test', 'PackerReassembler', 'EspDevice']
 );
 
 
-
-var TcpMyBus = require("./my_tcp_bus");
+var my_tcp_bus = require("./my_tcp_bus");
 var KeepAlive = require("./keep_alive");
-
+var esp_device = require("./esp_device");
 
 var con = MyConsole.get('Test');
 
@@ -19,8 +18,11 @@ var succ = 0;
 var sent = 0;
 
 
-var bus = new TcpMyBus('192.168.1.170', 300);
-new KeepAlive(bus);
+//var bus = new my_tcp_bus('192.168.1.170', 300);
+//new KeepAlive(bus);
+
+var bus = new esp_device({ip: '192.168.1.170', port: 300});
+
 
 var onReceive = function (err, d) {
 

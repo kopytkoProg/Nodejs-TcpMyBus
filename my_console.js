@@ -24,20 +24,28 @@ var MyConsole = {
 
         return {
             name: name,
+            /**
+             @param {...*} message
+             */
             log: (log ?
-                function (txt, o) {
-                    if (typeof o !== 'undefined') console.log(this.name + ' ' + txt, o);
-                    else console.log(this.name + ' ' + txt);
+                function () {
+                    var a = Array.prototype.slice.call(arguments);
+                    a.unshift(this.name);
+                    console.log.apply(console, a);
                 } :
-                function (txt, o) {
+                function () {
 
                 }),
+            /**
+             @param {...*} message
+             */
             error: (error ?
-                function (txt, o) {
-                    if (typeof o !== 'undefined') console.error(this.name + ' ' + txt, o);
-                    else console.error(this.name + ' ' + txt);
+                function () {
+                    var a = Array.prototype.slice.call(arguments);
+                    a.unshift(this.name);
+                    console.error.apply(console, a);
                 } :
-                function (txt, o) {
+                function () {
 
                 })
         };

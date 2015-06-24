@@ -40,6 +40,13 @@ var Msg = function () {
 /**********************************************************************************************************************/
 
 // eg: '192.168.1.170', 300,
+
+/***
+ *
+ * @param host
+ * @param port
+ * @class
+ */
 var TcpMyBus = function (host, port) {
     var state = STATES.disconnected;
 
