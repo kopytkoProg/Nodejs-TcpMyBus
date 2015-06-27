@@ -33,9 +33,10 @@ var onReceive = function (err, d) {
     }
 
 
-    bus.send(msg, onReceive);
+
 };
-onReceive(null, '');
+bus.send(msg, onReceive);
+// onReceive(null, '');
 
 
 

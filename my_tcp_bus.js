@@ -80,7 +80,7 @@ var TcpMyBus = function (host, port) {
 
         if (state == STATES.idle && queue.length > 0) {
 
-            if (queue[0].numOfTry >= 3) {
+            if (queue[0].numOfTry >= 5) {
                 var e = queue.shift();
                 cons.log('Drop: ' + JSON.stringify(e));
                 e.callback('No response', null);
@@ -122,9 +122,23 @@ var TcpMyBus = function (host, port) {
          *  called on data
          */
         function (data) {
-            cons.log('Received:' + data.toString());
+            cons.log('Received from ' + host + ':' + port + ': ' + data.toString());
             updateLastActivityTime();
             pr.adMsg(data.toString());
+        },
+        /***
+         *  called on each disconnect
+         */
+        function () {
+            cons.log('Disconnect from ' + host + ':' + port);
+            /*
+            When disconnected from server then call next()
+            in next method try tu send again but first it have to reconnect so
+            reconnect happen.
+            After connect the onReconnect callback is called
+             */
+            state = STATES.idle;
+            next();
         },
         /***
          *  called on each reconnect
@@ -132,6 +146,12 @@ var TcpMyBus = function (host, port) {
         function () {
             updateLastActivityTime();
             cons.log('Reconnect to ' + host + ':' + port);
+
+            /*
+             Whet it is called its mean that te connection is created so you can try again send msg
+             */
+            state = STATES.idle;
+            next();
         }
     );
 

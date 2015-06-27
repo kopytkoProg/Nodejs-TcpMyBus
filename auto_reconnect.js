@@ -6,9 +6,16 @@ var net = require('net');
 var Timeout = require("./timeout");
 var cons = require("./my_console").get('AutoReconnect');
 
+var CONNECTION_STATES = {
+    Connected: 0,
+    Disconnected: 1,
+    WaitingForClose: 2,
+    WaitingForConnection: 3
+};
 
-var CONNECTION_TIMEOUT = 10 * 1000;         // 3 s
-var KEEP_ALIVE = 100;                       // 1 s
+
+var CONNECTION_TIMEOUT = 3 * 1000;          // 3 s
+// var KEEP_ALIVE = 100;                       // 1 s
 
 //var States = {
 //
@@ -21,66 +28,71 @@ var KEEP_ALIVE = 100;                       // 1 s
  * @param {number} port
  * @param {AutoReconnect~onConnect} onConnect
  * @param {AutoReconnect~onData} onData
+ * @param {AutoReconnect~onDisconnect} onDisconnect
  * @param {AutoReconnect~onReconnect} onReconnect
  * @constructor
  */
-var AutoReconnect = function (host, port, onConnect, onData, onReconnect) {
+var AutoReconnect = function (host, port, onConnect, onData, onDisconnect, onReconnect) {
     var t = this;
     var cfg = {port: port, host: host};
+    var connectionStatus = CONNECTION_STATES.Disconnected;
 
     var timeout = new Timeout(function () {
         cons.error('Disconnect because of timeout');
-        t.connction.destroy();
+        connectionStatus = CONNECTION_STATES.WaitingForClose;
+        t.connction.end();
     }, CONNECTION_TIMEOUT);
 
     var setListeners = function () {
 
         t.connction.on('data', function (data) {
-            if (onData) onData(data);
             timeout.arm();
+            if (onData) onData(data);
         });
 
         t.connction.on('close', function (err) {
-            /*
-             Mey be better to wait until someone want to us this connection.
-             Eg of use:
-             1. send msg
-             2. idle
-             3. disconnect because of long idle time
-             4. send msg so connection should be recreated
-             5. ...
-             to do it comment line below (and do something else(check in send method if have connection))
-             other way connection will be automatically recreated each time it fail
-             */
-            connect(onReconnect);
+            connectionStatus = CONNECTION_STATES.Disconnected;
+            if (onDisconnect) onDisconnect();
         });
-
-        // t.connction.on('timeout', xxx);
 
         t.connction.on('error', function (error) {
             cons.error('Connection error: ', error);
-            t.connction.destroy();
+            connectionStatus = CONNECTION_STATES.WaitingForClose;
         });
 
     };
 
     var connect = function (onConnect) {
+        connectionStatus = CONNECTION_STATES.WaitingForConnection;
         t.connction = net.connect(cfg, function () {
+            connectionStatus = CONNECTION_STATES.Connected;
             timeout.arm();
             if (onConnect) onConnect();
+
         });
+
         setListeners();
-        // t.connction.setTimeout(CONNECTION_TIMEOUT);
-        // t.connction.setKeepAlive(true, 0);
+
     };
 
     this.send = function (msg) {
-        try {
-            t.connction.write(msg);
-            cons.log('sent')
-        } catch (e) {
-            cons.error('SendError:', e)
+        var r = false;
+        if (connectionStatus == CONNECTION_STATES.WaitingForClose) {
+            cons.log('WaitingForClose');
         }
+        else if (connectionStatus == CONNECTION_STATES.WaitingForConnection) {
+            cons.log('WaitingForConnection');
+        }
+        else if (connectionStatus == CONNECTION_STATES.Disconnected) {
+            cons.log('Disconnected');
+            connect(onReconnect);
+        }
+        else if (connectionStatus == CONNECTION_STATES.Connected) {
+            cons.log('Connected');
+            t.connction.write(msg);
+            r = true;
+        }
+        return r;
     };
 
     connect(onConnect);
@@ -96,6 +108,11 @@ module.exports = AutoReconnect;
 /**
  * Called when data come
  * @callback AutoReconnect~onData
+ */
+
+/**
+ * Called when disconnected
+ * @callback AutoReconnect~onDisconnect
  */
 
 /**

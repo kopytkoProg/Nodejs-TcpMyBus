@@ -4,8 +4,8 @@
 var cons = require("./my_console").get('KeepAlive');
 
 
-var TIME = 8 * 1000;    // 10 s
-var MARGIN = 1000;      // 1 s
+var TIME = 2 * 1000;
+var MARGIN = 200;
 var CMD = '{keepAlive-esp8266}';
 
 
@@ -33,12 +33,14 @@ var KeepAlive = function (tmb) {
         if (now() - tmb.getLastActivity() >= TIME - MARGIN) {
             inProgress = true;
             cons.log('KeepAlive sent');
-            tmb.send(CMD, function (msg) {
-                cons.log('KeepAlive response: ' + msg);
+            tmb.send(CMD, function (err, msg) {
+                if (err) cons.log('KeepAlive response err: ' + err);
+                else cons.log('KeepAlive response: ' + msg);
+
                 inProgress = false;
                 setupTimer();
             });
-        }else{
+        } else {
             setupTimer();
         }
     };
