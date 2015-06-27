@@ -41,6 +41,17 @@ var AutoReconnect = function (host, port, onConnect, onData, onReconnect) {
         });
 
         t.connction.on('close', function (err) {
+            /*
+             Mey be better to wait until someone want to us this connection.
+             Eg of use:
+             1. send msg
+             2. idle
+             3. disconnect because of long idle time
+             4. send msg so connection should be recreated
+             5. ...
+             to do it comment line below (and do something else(check in send method if have connection))
+             other way connection will be automatically recreated each time it fail
+             */
             connect(onReconnect);
         });
 

@@ -7,6 +7,7 @@ var my_tcp_bus = require('./my_tcp_bus');
 var con = require('./my_console').get('EspDevice');
 var KeepAlive = require("./keep_alive");
 
+
 /***
  *
  * @param {EspDevice~cfg} cfg
@@ -23,13 +24,6 @@ var EspDevice = function (cfg) {
 
 };
 util.inherits(EspDevice, my_tcp_bus);
-
-
-
-
-
-
-
 
 
 
