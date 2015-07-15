@@ -7,11 +7,10 @@ var PackerReassembler = require("./../packer_reassembler");
 var Timeout = require("./../timeout");
 var cons = require("./../my_console").get('TcpMyBus');
 var FailureIndicator = require('./failure_indicator');
-var AsyncSpecialMsgExecutor = require('./special_msg_handler');
 var MsgFactory = require('./msg');
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
 
-
-var asyncSpecialMsgExecutor = new AsyncSpecialMsgExecutor();
 var msgFactory = new MsgFactory();
 
 
@@ -54,8 +53,13 @@ var Task = function () {
  * @param host
  * @param port
  * @class
+ * @extends EventEmitter
  */
 var TcpMyBus = function (host, port) {
+    // call super constructor
+    TcpMyBus.super_.call(this);
+    var t = this;
+
     var state = STATES.disconnected;
 
     var lastActivity = 0;
@@ -131,22 +135,19 @@ var TcpMyBus = function (host, port) {
 
         if (err) return cons.error('PackerReassemblerError' + err);
 
-        if (queue.length > 0 && state == STATES.waitingForResponse && msg.id == queue[0].msg.id) {
-            var e = queue.shift();
-            timeout.disarm();
-            state = STATES.idle;
-            e.callback(null, msg.content);
-            next();
+        if (!msg.isAsync()) {
+            if (queue.length > 0 && state == STATES.waitingForResponse && msg.id == queue[0].msg.id) {
+                var e = queue.shift();
+                timeout.disarm();
+                state = STATES.idle;
+                e.callback(null, msg.content);
+                next();
 
-        }
-        /*
-         TODO: Create beter solution to handle unheadered msg, mey be queue of handler.
-         TODO: Create handler of mac address
-         */
-        if (!msg.hasHeader()) {
-            if (!asyncSpecialMsgExecutor.tryHandleAsyncMsg(msg)) {
-                cons.log('TODO: exec unheadered msg', msg)
             }
+        }
+        else {
+            if (!t.emit(msg.id, msg))
+                cons.log('TODO: exec unheadered msg', msg)
         }
     });
 
@@ -212,19 +213,7 @@ var TcpMyBus = function (host, port) {
         next();
     };
 };
-
-
-TcpMyBus.prototype.SPECIAL_COMMANDS = {
-    /**
-     * run wifi scaning. Response will come asynchronously (it start with 'wifiInfo-esp8266')
-     */
-    'scanNetwork-esp8266': 'scanNetwork-esp8266',
-
-    /**
-     * return mac address
-     */
-    'getMacInfo-esp8266': 'getMacInfo-esp8266'
-};
+util.inherits(TcpMyBus, EventEmitter);
 
 module.exports = TcpMyBus;
 

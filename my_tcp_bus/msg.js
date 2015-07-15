@@ -18,6 +18,9 @@ Msg.prototype = {
     },
     hasHeader: function () {
         return this.args.length > 0
+    },
+    isAsync: function(){
+        return !this.hasHeader() || isNaN(this.args[0]);
     }
 };
 
@@ -43,17 +46,14 @@ var MsgFactory = function () {
  * @returns {Msg}
  */
 MsgFactory.prototype.parse = function (txt) {
-    /*
-     {00000,other params,...|contentOfMsg}
-     */
-    var m = new RegExp('^{(.*)[|](.*)}$').exec(txt);
+
+    var m;
     var msg = new Msg();
 
-    if (m) {
+    if (m = new RegExp('^{(.*)[|](.*)}$').exec(txt)) {  // eg: {id,other params,...|contentOfMsg}
         msg.args = m[1].split(',');
         msg.content = m[2];
-    } else {
-        var m = new RegExp('^{(.*)}$').exec(txt);
+    } else if (m = new RegExp('^{(.*)}$').exec(txt)) {  // eg: {contentOfMsg}
         msg.content = m[1];
         msg.args = [];
     }

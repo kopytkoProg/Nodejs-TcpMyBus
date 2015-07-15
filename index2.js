@@ -7,12 +7,13 @@ MyConsole.setAllowedModuleList(
 
 var my_tcp_bus = require("./my_tcp_bus/my_tcp_bus");
 var KeepAlive = require("./keep_alive");
-var esp_device = require("./esp_device");
+var esp_device = require("./esp_device/esp_device");
 
 var con = MyConsole.get('Test');
 
 // --- var ---
 var msg = 'Hi, I am the long msg spaced with 000000000 and the end';
+
 var err = 0;
 var succ = 0;
 var sent = 0;
@@ -23,6 +24,14 @@ var sent = 0;
 
 var bus = new esp_device({ip: '192.168.1.170', port: 300});
 
+msg = bus.SPECIAL_COMMANDS.scanNetwork;
+
+bus.send(bus.SPECIAL_COMMANDS.getMacInfo, function(err, m){
+    con.log(m);
+
+    bus.send(msg, onReceive);
+});
+
 
 var onReceive = function (err, d) {
 
@@ -32,11 +41,11 @@ var onReceive = function (err, d) {
         con.log('Received: ' + d.toString());
     }
 
-    bus.send(msg, onReceive);
+
 
 };
-onReceive(null, '');
-//
+//onReceive(null, '');
+
 
 
 
