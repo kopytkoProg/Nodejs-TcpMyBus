@@ -3,7 +3,7 @@
  */
 
 
-var SIZE_OF_NAME_COLUMN = 20;
+var SIZE_OF_NAME_COLUMN = 30;
 
 
 var allowedLog = [];

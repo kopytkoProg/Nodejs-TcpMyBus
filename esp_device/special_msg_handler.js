@@ -1,11 +1,13 @@
 /**
  * Created by michal on 14.07.15.
  */
-var WIFI_INFO = 'wifiInfo-esp8266';
+
+var con = require("./../my_console").get('SpecialMsgHandler');
 
 
 var ASYNC_ACTIONS = {
-    WIFI_INFO: ("wifiInfo-esp8266")
+    WIFI_INFO: 'wifiInfo-esp8266',
+    DEBUG_INFO: 'avr-debug'
 };
 
 /***
@@ -19,6 +21,7 @@ var SpecialMsgHandler = function (esp_device) {
     this.esp_device = esp_device;
     var t = this;
     this.esp_device.on(ASYNC_ACTIONS.WIFI_INFO, function(msg){t.wifiInfo.call(t, msg)});
+    this.esp_device.on(ASYNC_ACTIONS.DEBUG_INFO, function(msg){t.avrDebugInfo.call(t, msg)});
 
 };
 
@@ -38,8 +41,16 @@ var util = {
  *
  * @param {Msg} msg
  */
+SpecialMsgHandler.prototype.avrDebugInfo = function (msg) {
+    con.log(msg);
+};
+
+/**
+ *
+ * @param {Msg} msg
+ */
 SpecialMsgHandler.prototype.wifiInfo = function (msg) {
-    var handled = true;
+
 
     /*
      wifiInfo-esp8266
@@ -57,10 +68,8 @@ SpecialMsgHandler.prototype.wifiInfo = function (msg) {
         chanel: chanel,
         quality: util.dBmToPercent(parseInt(dBm))
     };
-    console.log(this.info);
+    con.log(this.info);
 
-
-    return handled;
 };
 
 module.exports = SpecialMsgHandler;

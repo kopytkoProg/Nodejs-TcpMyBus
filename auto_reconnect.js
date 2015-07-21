@@ -14,14 +14,17 @@ var CONNECTION_STATES = {
 };
 
 
-var CONNECTION_TIMEOUT = 3 * 1000;          // 3 s
-// var KEEP_ALIVE = 100;                       // 1 s
+var CONNECTION_TIMEOUT = 5 * 1000;          // 3 s
+var CONNECTION_DISCONNECTING_TIMEOUT = 15 * 1000;          // 3 s
+// var KEEP_ALIVE = 100;                    // 1 s
 
 //var States = {
 //
 //};
 //
 //var state = 1;
+
+// TODO: kill connection on problem with disconnect
 /***
  *
  * @param {string} host
@@ -37,10 +40,17 @@ var AutoReconnect = function (host, port, onConnect, onData, onDisconnect, onRec
     var cfg = {port: port, host: host};
     var connectionStatus = CONNECTION_STATES.Disconnected;
 
+    var waitingForDisconnectTimeout = new Timeout(function () {
+        cons.error('Disconnect Forced');
+        t.connction.destroy();
+        //t.connction.destroy();
+    }, CONNECTION_DISCONNECTING_TIMEOUT);
+
     var timeout = new Timeout(function () {
         cons.error('Disconnect because of timeout');
         connectionStatus = CONNECTION_STATES.WaitingForClose;
         t.connction.end();
+        waitingForDisconnectTimeout.arm();
     }, CONNECTION_TIMEOUT);
 
     var setListeners = function () {
@@ -52,6 +62,7 @@ var AutoReconnect = function (host, port, onConnect, onData, onDisconnect, onRec
 
         t.connction.on('close', function (err) {
             connectionStatus = CONNECTION_STATES.Disconnected;
+            waitingForDisconnectTimeout.disarm();
             if (onDisconnect) onDisconnect();
         });
 

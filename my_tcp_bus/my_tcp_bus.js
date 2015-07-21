@@ -14,7 +14,7 @@ var util = require('util');
 var msgFactory = new MsgFactory();
 
 
-var RESPONSE_TIMEOUT = 5 * 1000; // 5 s
+var RESPONSE_TIMEOUT = 7 * 1000; // 5 s
 var WAIT_AFTER_FAILURE = 60 * 1000; // 60 s
 
 var STATES = {
@@ -101,7 +101,7 @@ var TcpMyBus = function (host, port) {
                  */
                 var e = queue.shift();
                 cons.log('Drop (failure): ' + JSON.stringify(e));
-                e.callback('Cant send because of failure', null);
+                e.callback.call(t, 'Cant send because of failure', null);
                 return next();
 
             } else if (queue[0].numOfTry >= 5) {
@@ -110,7 +110,7 @@ var TcpMyBus = function (host, port) {
                  */
                 var e = queue.shift();
                 cons.log('Drop (no response): ' + JSON.stringify(e));
-                e.callback('No response', null);
+                e.callback.call(t, 'No response', null);
                 failureIndicator.fail();
                 return next();
 
@@ -140,7 +140,7 @@ var TcpMyBus = function (host, port) {
                 var e = queue.shift();
                 timeout.disarm();
                 state = STATES.idle;
-                e.callback(null, msg.content);
+                e.callback.call(t, null, msg.content);
                 next();
 
             }
@@ -202,12 +202,16 @@ var TcpMyBus = function (host, port) {
     /***
      *
      * @param {string} msg
-     * @param {TcpMyBus~onResponse} callback
+     * @param {TcpMyBus~onResponse} [callback]
      */
     TcpMyBus.prototype.send = function (msg, callback) {
         var m = new Task();
         m.msg = msgFactory.create(msg);
+        if (typeof callback === 'undefined') callback = function () {
+        };
+
         m.callback = callback;
+
 
         queue.push(m);
         next();

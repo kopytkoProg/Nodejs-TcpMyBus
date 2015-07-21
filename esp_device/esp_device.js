@@ -41,6 +41,13 @@ EspDevice.prototype.SPECIAL_COMMANDS = {
     getMacInfo: 'getMacInfo-esp8266'
 };
 
+EspDevice.prototype.AVR_COMMANDS = {
+    /** return hello-avr */
+    helloAvr: 'hello-avr'
+};
+
+
+
 module.exports = EspDevice;
 
 /***
