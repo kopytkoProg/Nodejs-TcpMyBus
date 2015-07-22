@@ -13,11 +13,11 @@ var EventEmitter = require('events').EventEmitter;
 
 
 
-/***
+/**
  * @augments TcpMyBus
  * @param {EspDevice~cfg} cfg
  * @class
- *
+
  */
 var EspDevice = function (cfg) {
     // call super constructor
@@ -50,7 +50,7 @@ EspDevice.prototype.AVR_COMMANDS = {
 
 module.exports = EspDevice;
 
-/***
+/**
  * @typedef {Object} EspDevice~cfg
  * @property {string} ip
  * @property {number} port

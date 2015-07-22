@@ -53,11 +53,11 @@ var MyConsole = {
 
     },
 
-    /***
+    /**
      *  Set the permission list for modules.
      *
-     * @param {[string]} al modules allowed to use log
-     * @param {[string]} ae modules allowed to use error
+     * @param {string[]} al modules allowed to use log
+     * @param {string[]} ae modules allowed to use error
      */
     setAllowedModuleList: function (al, ae) {
         allowedLog = al;

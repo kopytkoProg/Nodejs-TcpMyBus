@@ -61,7 +61,7 @@ MsgFactory.prototype.parse = function (txt) {
 
     return msg;
 };
-/***
+/**
  *
  * @param content
  * @returns {Msg}

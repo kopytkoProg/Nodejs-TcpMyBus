@@ -2,7 +2,7 @@
  * Created by michal on 25.06.15.
  */
 
-/***
+/**
  *
  * @param name
  * @param methods

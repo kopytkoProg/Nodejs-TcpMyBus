@@ -20,7 +20,7 @@ var client = net.connect({port: 300, host: '192.168.1.170'},
 client.setKeepAlive(true, 100);
 
 
-/****
+/**
  *
  * @param {string} msg
  */

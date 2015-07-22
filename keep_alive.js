@@ -9,7 +9,7 @@ var MARGIN = 200;
 var CMD = 'keepAlive-esp8266';
 
 
-/***
+/**
  *
  * @param {TcpMyBus} tmb
  * @constructor KeepAlive

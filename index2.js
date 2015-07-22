@@ -28,6 +28,8 @@ var KeepAlive = require("./keep_alive");
 var esp_temp_sensors_device = require("./esp_device/esp_temp_sensors_device");
 
 var con = MyConsole.get('Test');
+var ld = require('./logical_devices/logical_devices');
+
 
 // --- var ---
 var msg = 'Hi, I am the long msg spaced with 000000000 and the endHi, I am the long msg spaced with 000000000 and the endHi, I am the long msg spaced with 000000000 and the endHi, I am the long msg spaced with 000000000 and the end';
@@ -49,17 +51,28 @@ bus.send(bus.AVR_COMMANDS.helloAvr, function (err, m) {
 });
 
 
-var onReceive = function (err, m) {
-    con.log('TMP: \r\n',  m);
+setTimeout(function () {
+    ld.logicalTempSensors.forEach(function (e) {
+        e.getTemp(function (err, temp) {
+            if (err) return con.log(err);
+            con.log(e.getId() + ' ' + temp);
+        });
+    });
 
-    setTimeout(function () {
-
-            bus.getAllSensorTemp(onReceive);
 }, 1000);
 
 
-};
-onReceive(null, '');
+//var onReceive = function (err, m) {
+//    con.log('TMP: \r\n', m);
+//
+//    setTimeout(function () {
+//
+//        bus.getAllSensorTemp(onReceive);
+//    }, 1000);
+//
+//
+//};
+//onReceive(null, '');
 
 
 ////bus.send(bus.SPECIAL_COMMANDS.getMacInfo, function(err, m){

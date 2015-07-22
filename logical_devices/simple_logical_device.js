@@ -3,7 +3,7 @@
  */
 
 
-var ILogicalDeviceInterface = require('./logical_device_interface');
+var ILogicalDeviceInterface = require('./Interfaces/logical_device_interface');
 var util = require('util');
 
 /**

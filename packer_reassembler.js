@@ -3,7 +3,7 @@
  */
 
 var cons = require("./my_console").get('PackerReassembler');
-/***
+/**
  *
  * @param {PackerReassembler~onMsg} f
  * @constructor
@@ -15,7 +15,7 @@ var PackerReassembler = function (f) {
 };
 
 
-/***
+/**
  *
  * @param {string} msg
  */

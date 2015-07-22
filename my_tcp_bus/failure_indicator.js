@@ -3,7 +3,7 @@
  */
 
 
-/***
+/**
  *
  * @param waitTime time to wait after failure. After this time state is ok
  * @constructor

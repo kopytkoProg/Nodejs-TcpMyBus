@@ -24,19 +24,19 @@ var STATES = {
 };
 
 
-/***
+/**
  * @constructor
  */
 var Task = function () {
-    /***
+    /**
      * @type {Msg}
      */
     this.msg = null;
-    /***
+    /**
      * @type {number}
      */
     this.numOfTry = 0;
-    /***
+    /**
      * @type {TcpMyBus~onResponse}
      */
     this.callback = null;
@@ -48,12 +48,13 @@ var Task = function () {
 
 // eg: '192.168.1.170', 300,
 
-/***
+/**
  *
  * @param host
  * @param port
  * @class
  * @extends EventEmitter
+ * @fires *
  */
 var TcpMyBus = function (host, port) {
     // call super constructor
@@ -68,7 +69,7 @@ var TcpMyBus = function (host, port) {
         lastActivity = new Date().getTime();
     };
 
-    /***
+    /**
      * Return time of last connection activity (receive or connection create or recreate).
      * @returns {number}
      */
@@ -76,7 +77,7 @@ var TcpMyBus = function (host, port) {
         return lastActivity;
     };
 
-    /***
+    /**
      * @type {Array.<Task>}
      */
     var queue = [];
@@ -152,7 +153,7 @@ var TcpMyBus = function (host, port) {
     });
 
     var ar = new AutoReconnect(host, port,
-        /***
+        /**
          *  called only once
          */
         function () {
@@ -161,7 +162,7 @@ var TcpMyBus = function (host, port) {
             updateLastActivityTime();
             next();
         },
-        /***
+        /**
          *  called on data
          */
         function (data) {
@@ -169,7 +170,7 @@ var TcpMyBus = function (host, port) {
             updateLastActivityTime();
             pr.adMsg(data.toString());
         },
-        /***
+        /**
          *  called on each disconnect
          */
         function () {
@@ -183,7 +184,7 @@ var TcpMyBus = function (host, port) {
             state = STATES.idle;
             next();
         },
-        /***
+        /**
          *  called on each reconnect
          */
         function () {
@@ -199,7 +200,7 @@ var TcpMyBus = function (host, port) {
     );
 
 
-    /***
+    /**
      *
      * @param {string} msg
      * @param {TcpMyBus~onResponse} [callback]
@@ -222,7 +223,7 @@ util.inherits(TcpMyBus, EventEmitter);
 module.exports = TcpMyBus;
 
 
-/***
+/**
  * @callback TcpMyBus~onResponse
  * @param err
  * @param response

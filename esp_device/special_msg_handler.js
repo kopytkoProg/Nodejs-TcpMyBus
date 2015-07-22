@@ -10,7 +10,7 @@ var ASYNC_ACTIONS = {
     DEBUG_INFO: 'avr-debug'
 };
 
-/***
+/**
  *
  * @param {EspDevice} esp_device
  * @constructor
